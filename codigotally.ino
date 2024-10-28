@@ -41,6 +41,8 @@ IPAddress stationMask = IPAddress(255, 255, 255, 0);
 
 //Número de cámara por defecto de tu Tally. Se puede cambiar pinchando el botón frontal del M5Atom
 int camNumber = 0;
+// define aquí el número máximo de Tallys que tendrás.
+int cantidadcamaras = 8;
 
 //Nombre del dispositivo - Se añadirá unos bytes del MAC Address para hacer un id único.
 String listenerDeviceName = "m5Atom-";
@@ -134,9 +136,9 @@ void lucecita(int color){
 void parpadearlucecita(int color, int cantidad){
   for (int k = 0; k < cantidad; k++) {
     M5.dis.drawpix(0, color);
-    delay(250);
+    delay(100);
     M5.dis.drawpix(0, 0x000000);
-    delay(250);
+    delay(100);
   }
 }
 
@@ -160,7 +162,7 @@ void evaluateMode() {
       //logger("Current camNumber: " + String(camNumber), "info");
       lucecita(currColor);
     } else {
-      //drawNumber(camNumber, offcolor);
+      lucecita(offcolor);
     }
 
     logger("Device is in " + actualType + " (color " + actualColor + " priority " + String(actualPriority) + ")", "info");
@@ -622,6 +624,7 @@ void setup() {
   
   connectToServer();
   delay (100);
+  parpadearlucecita(infocolor, camNumber);
 }
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -633,7 +636,7 @@ void loop(){
   socket.loop();
   if (M5.Btn.wasPressed()){
     // Switch action below
-    if (camNumber < 16){
+    if (camNumber < cantidadcamaras){
       camNumber++;  
         preferences.begin("tally-arbiter", false);          // Open Preferences with no read-only access
         preferences.putInt("camNumber", camNumber);      // Save camera number
